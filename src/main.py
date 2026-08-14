@@ -1,9 +1,19 @@
-from textnode import TextNode, TextType
+import os
+import shutil
+
+from copystatic import copy_files_recursive
+
+STATIC_DIR = "static"
+PUBLIC_DIR = "public"
+
 
 def main():
-    new_textNode = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
-    print(new_textNode)
+    if os.path.exists(PUBLIC_DIR):
+        print(f"Deleting {PUBLIC_DIR} directory...")
+        shutil.rmtree(PUBLIC_DIR)
 
+    print(f"Copying {STATIC_DIR} to {PUBLIC_DIR}...")
+    copy_files_recursive(STATIC_DIR, PUBLIC_DIR)
 
 
 if __name__ == "__main__":
