@@ -1,6 +1,6 @@
 import unittest
 
-from markdown_to_html import markdown_to_html_node
+from markdown_to_html import markdown_to_html_node, extract_title
 
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
@@ -124,6 +124,34 @@ code here
             html,
             '<div><p>This is a <a href="https://www.boot.dev">link</a> and an <img src="https://www.boot.dev/img.png" alt="image"></img></p></div>',
         )
+
+
+class TestExtractTitle(unittest.TestCase):
+    def test_extract_title(self):
+        self.assertEqual(extract_title("# Hello"), "Hello")
+
+    def test_extract_title_strips_whitespace(self):
+        self.assertEqual(extract_title("#   Hello World   "), "Hello World")
+
+    def test_extract_title_not_first_line(self):
+        md = "Some intro text\n\n# The Real Title\n\nMore content"
+        self.assertEqual(extract_title(md), "The Real Title")
+
+    def test_extract_title_ignores_h2(self):
+        md = "## Not this one\n\n# This one"
+        self.assertEqual(extract_title(md), "This one")
+
+    def test_extract_title_no_heading_raises(self):
+        with self.assertRaises(ValueError):
+            extract_title("Just a paragraph, no heading here")
+
+    def test_extract_title_hash_without_space_raises(self):
+        with self.assertRaises(ValueError):
+            extract_title("#NoSpaceHeading")
+
+    def test_extract_title_multiple_h1_returns_first(self):
+        md = "# First Title\n\n# Second Title"
+        self.assertEqual(extract_title(md), "First Title")
 
 
 if __name__ == "__main__":
